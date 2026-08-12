@@ -1,0 +1,9 @@
+# --- manifest.json ---
+{
+  "name": "VC Shadow",
+  "description": "Passive voice-state movement tracker with webhook logging.",
+  "authors": [{ "name": "Viibe", "id": "000000000000000000" }],
+  "color": "#5865F2",
+  "source": "",
+  "updateUrl": ""
+}
