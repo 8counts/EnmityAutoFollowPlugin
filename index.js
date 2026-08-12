@@ -1,10 +1,10 @@
-// --- vc-shadow.js ---
-// Passive voice-state movement tracker. Monitors target presence, logs via webhook.
-// Requires user to be in a VC to activate follow. No direct messages or writes to target.
+# --- index.js ---
+// VC Shadow — Passive voice-state movement tracker for Enmity.
+// manifest.json MUST be in the same directory for the Enmity loader to register this plugin.
 
-const { React } = window.Enmity;
 const { createPlugin } = window.Enmity;
-const { Toast, Navigation } = window.Enmity.common;
+const { React } = window.Enmity;
+const { Toast } = window.Enmity.common;
 const { FormSection, FormInput, FormSwitch, FormButton } = window.Enmity.components;
 
 const TRACK_STATE = Symbol.for("__vc_shadow_v1__");
@@ -62,7 +62,6 @@ async function logVoiceMove(client, oldState, newState) {
         { name: "Timestamp", value: timestamp, inline: false }
     ];
 
-    // Fetch current occupants if new channel exists
     if (newChannel) {
         try {
             const channel = guild.channels.cache.get(newChannel);
@@ -82,7 +81,6 @@ async function logVoiceMove(client, oldState, newState) {
 
     await sendWebhook(state.webhookUrl, embed);
 
-    // Auto-follow logic
     if (state.followEnabled && newChannel) {
         const selfVoice = client.voice?.states?.cache?.get(client.user.id);
         if (selfVoice) {
@@ -123,14 +121,12 @@ const VcShadow = {
     color: 0x5865F2,
 
     onStart() {
-        // Register voiceStateUpdate listener
         this._onVoiceUpdate = async (oldState, newState) => {
             const client = window.Enmity?.native?.client || window.DiscordNative?.client;
             if (!client) return;
             await logVoiceMove(client, oldState, newState);
         };
 
-        // Patch into the client event emitter
         const client = window.Enmity?.native?.client || window.DiscordNative?.client;
         if (client) {
             client.on("voiceStateUpdate", this._onVoiceUpdate);
